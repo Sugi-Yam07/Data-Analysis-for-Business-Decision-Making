@@ -1,1 +1,64 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import requests
+import io
 
+# URL do arquivo no Google Drive
+file_id = '1aJmF3UUW59s3oL3saqi3W9csnYUYs4O4'
+url = f'https://drive.google.com/uc?export=download&id={file_id}'
+
+# Fazer a solicitação para baixar o arquivo
+response = requests.get(url)
+response.raise_for_status()  # Verificar se houve erro na requisição
+
+# Ler o conteúdo do arquivo como CSV
+file_stream = io.StringIO(response.text)
+data = pd.read_csv(file_stream)
+
+# Converter a coluna 'Date' para o formato de data
+data['Date'] = pd.to_datetime(data['Date'])
+
+# Exibir as primeiras linhas do dataframe para verificação
+print(data.head())
+
+# Histograma
+plt.figure(figsize=(10, 6))
+sns.histplot(data['Close'], bins=30, kde=True)
+plt.title('Histograma dos preços de fechamento do BTC-USD')
+plt.xlabel('Preço de Fechamento')
+plt.ylabel('Frequência')
+plt.grid(True)
+plt.show()
+# Explicação: Este histograma mostra a distribuição dos preços de fechamento do BTC-USD. Podemos observar como os preços se distribuem, identificando a frequência de diferentes intervalos de preços.
+
+# Gráfico de Dispersão (ajustado para legibilidade)
+plt.figure(figsize=(14, 7))
+sns.lineplot(x='Date', y='Close', data=data, marker='o', markersize=4, linewidth=1, alpha=0.6)
+plt.title('Gráfico de Dispersão dos preços de fechamento do BTC-USD ao longo do tempo')
+plt.xlabel('Data')
+plt.ylabel('Preço de Fechamento')
+plt.xticks(rotation=45)
+plt.grid(True)
+plt.show()
+# Explicação: O gráfico de linha mostra a variação dos preços de fechamento do BTC-USD ao longo do tempo. A linha conecta os preços diários, tornando mais fácil identificar tendências e padrões ao longo do período.
+
+# Gráfico de Barras
+plt.figure(figsize=(10, 6))
+sns.barplot(x='Date', y='Volume', data=data.head(30))  # Usar apenas as primeiras 30 entradas para melhor visualização
+plt.title('Gráfico de Barras do Volume de BTC-USD')
+plt.xlabel('Data')
+plt.ylabel('Volume')
+plt.xticks(rotation=90)
+plt.grid(True)
+plt.show()
+# Explicação: O gráfico de barras mostra o volume de negociação do BTC-USD em diferentes dias. Usamos apenas as primeiras 30 entradas para uma visualização clara. Isso ajuda a identificar os dias com maior e menor volume de transações.
+
+# Relatório Completo
+print("Relatório Completo:")
+print("O dataset contém informações sobre os preços de fechamento e volumes de negociação do BTC-USD.")
+print("Histograma: Mostra a distribuição dos preços de fechamento, indicando a frequência de diferentes faixas de preços.")
+print("Gráfico de Dispersão: Ilustra a variação dos preços ao longo do tempo, útil para identificar tendências.")
+print("Gráfico de Barras: Demonstra o volume de negociação diário, destacando os dias de maior atividade.")
+
+# Informações adicionais podem ser incluídas conforme necessário.
